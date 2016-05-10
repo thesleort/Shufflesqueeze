@@ -50,13 +50,14 @@ public class Encode {
             FileOutputStream outstream = new FileOutputStream( new File(args[1]));
             for (int i : Occurances) outstream.write(i);
 
+
             output = new BitOutputStream(outstream);
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
-                System.out.println(tempNumber);
+//                System.out.println(tempNumber);
                 writeTraverse(parent,tempNumber);
             }
         } catch (IOException e) {
