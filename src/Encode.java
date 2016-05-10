@@ -11,17 +11,18 @@ public class Encode {
     public static void main(String[] args) {
         int[] Occurances = new int[256];
         Element Hudffmannode;
+        FileInputStream inFile;
         try {
-            FileInputStream inFile = new FileInputStream(args[0]);
+            inFile = new FileInputStream(args[0]);
 
             for (int i : Occurances) Occurances[i] = 0;
             while (true) {
-                int tempnumer = inFile.read();
-                if (tempnumer < 0) {
+                int tempNumber = inFile.read();
+                if (tempNumber < 0) {
                     break;
                 }
-                System.out.print(tempnumer + " ");
-                Occurances[tempnumer] += 1;
+                System.out.print(tempNumber + " ");
+                Occurances[tempNumber] += 1;
             }
             System.out.println();
             for (int i : Occurances) System.out.print(i + " ");
@@ -29,13 +30,9 @@ public class Encode {
             System.out.println(Occurances[32]);
 
             inFile.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        int tempcountertoberenamed = 0;
-        for (int i : Occurances) tempcountertoberenamed++;
 
         PQHeap pqHeap = new PQHeap();
         int i = 0;
@@ -44,7 +41,6 @@ public class Encode {
                 System.out.println("inserting " + i + " with freq " + Occurances[i]);
                 pqHeap.insert(new Element(Occurances[i], i));
             }
-
             i++;
         }
         Element child = pqHeap.extractMin();
@@ -66,25 +62,31 @@ public class Encode {
         System.out.println();
         System.out.println("------------------------------------- ");
         System.out.println();
-        inordertreewalk(parent);
+        inOrderTreeWalk(parent);
 
-
+        try {
+            inFile = new FileInputStream(args[0]);
+            while(true) {
+                int tempNumber = inFile.read();
+                if (tempNumber < 0) {
+                    break;
+                }
+                // Traverse her
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-
-    public static int[] inordertreewalk(Knot x) {
+    public static void inOrderTreeWalk(Knot x) {
         if (x != null) {
-            inordertreewalk(x.leftchild);
+            inOrderTreeWalk(x.leftchild);
             if (x.key == -1) {
                 System.out.println("knots = " + x.freq);
             } else {
                 System.out.println("branch " + x.freq);
             }
-                inordertreewalk(x.rightchild);
-
-            }
-
-            return new int[0];
+            inOrderTreeWalk(x.rightchild);
         }
-
+    }
 }

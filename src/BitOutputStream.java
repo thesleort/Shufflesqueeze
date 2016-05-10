@@ -24,35 +24,35 @@ public final class BitOutputStream {
     // Creates a bit output stream based on the given byte output
     // stream.
     public BitOutputStream(OutputStream out) {
-	if (out == null)
-	    throw new NullPointerException("No output stream given");
-	output = out;
-	currentByte = 0;
-	numBitsInCurrentByte = 0;
+        if (out == null)
+            throw new NullPointerException("No output stream given");
+        output = out;
+        currentByte = 0;
+        numBitsInCurrentByte = 0;
     }
 
 
     // Writes a bit to the stream. The specified bit must be 0 or 1.
     public void writeBit(int b) throws IOException {
-	if (!(b == 0 || b == 1))
-	    throw new IllegalArgumentException("Argument must be 0 or 1");
-	currentByte = currentByte << 1 | b;
-	numBitsInCurrentByte++;
-	if (numBitsInCurrentByte == 8) {
-	    output.write(currentByte);
-	    numBitsInCurrentByte = 0;
-	}
+        if (!(b == 0 || b == 1))
+            throw new IllegalArgumentException("Argument must be 0 or 1");
+        currentByte = currentByte << 1 | b;
+        numBitsInCurrentByte++;
+        if (numBitsInCurrentByte == 8) {
+            output.write(currentByte);
+            numBitsInCurrentByte = 0;
+        }
     }
 
 
     // Writes an int to the stream.
     public void writeInt(int b) throws IOException {
 
-	int bitsWritten = 0;
-	while (bitsWritten < 32){
-	    writeBit(b >>> (31-bitsWritten) & 1);
-	    bitsWritten++;
-	}
+        int bitsWritten = 0;
+        while (bitsWritten < 32) {
+            writeBit(b >>> (31 - bitsWritten) & 1);
+            bitsWritten++;
+        }
     }
 
 
@@ -61,9 +61,9 @@ public final class BitOutputStream {
     // minimum number of "0" bits (between 0 and 7 of them) are
     // written as padding to reach the next byte boundary.
     public void close() throws IOException {
-	while (numBitsInCurrentByte != 0)
-	    writeBit(0);
-	output.close();
+        while (numBitsInCurrentByte != 0)
+            writeBit(0);
+        output.close();
     }
 
 }
