@@ -1,16 +1,17 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by Mark jervelund <Mark@jervelund.com> on 10-May-16.
  */
 public class Encode {
 
+    private static int length = 256;
+    private static String[] code = new String[length];
+    static BitOutputStream output;
 
     public static void main(String[] args) {
-        int[] Occurances = new int[256];
-        Element Hudffmannode;
+
+        int[] Occurances = new int[length];
         FileInputStream inFile;
         try {
             inFile = new FileInputStream(args[0]);
@@ -34,12 +35,61 @@ public class Encode {
             e.printStackTrace();
         }
 
+        Knot parent = genHuffTree(Occurances);
+        maketranslations(parent);
+
+
+
+        System.out.println();
+        System.out.println("------------------------------------- ");
+        System.out.println();
+//        for(String s: code) System.out.print(" "+s+" - ");
+
+        try {
+            inFile = new FileInputStream(args[0]);
+            FileOutputStream outstream = new FileOutputStream( new File(args[1]));
+            for (int i : Occurances) outstream.write(i);
+
+            output = new BitOutputStream(outstream);
+            while (true) {
+                int tempNumber = inFile.read();
+                if (tempNumber < 0) {
+                    break;
+                }
+                System.out.println(tempNumber);
+                writeTraverse(parent,tempNumber);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void maketranslations(Knot parent) {
+
+        Traverse(parent, "");
+
+    }
+
+    private static void Traverse(Knot tempknot, String binary) {
+        if (tempknot.leftchild != null) {
+            Traverse(tempknot.leftchild, (binary + "0"));
+        }
+        if (tempknot.rightchild != null) {
+            Traverse(tempknot.rightchild, (binary + "1"));
+        }
+        if (tempknot.key != -1) {
+            code[tempknot.key] = binary;
+        }
+    }
+
+
+    private static Knot genHuffTree(int[] occurances) {
         PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
-            if (Occurances[i] != 0) {
-                System.out.println("inserting " + i + " with freq " + Occurances[i]);
-                pqHeap.insert(new Element(Occurances[i], i));
+            if (occurances[i] != 0) {
+                System.out.println("inserting " + i + " with freq " + occurances[i]);
+                pqHeap.insert(new Element(occurances[i], i));
             }
             i++;
         }
@@ -59,34 +109,19 @@ public class Encode {
             child2.parent = parent;
             child1 = parent;
         }
-        System.out.println();
-        System.out.println("------------------------------------- ");
-        System.out.println();
-        inOrderTreeWalk(parent);
-
-        try {
-            inFile = new FileInputStream(args[0]);
-            while(true) {
-                int tempNumber = inFile.read();
-                if (tempNumber < 0) {
-                    break;
-                }
-                // Traverse her
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        return parent;
+    }
+    private static void writeTraverse(Knot tempknot, int letternumber) throws IOException {
+        if (tempknot.leftchild != null && tempknot.leftchild.key == letternumber) {
+            output.writeBit(1);
+            writeTraverse(tempknot.leftchild, letternumber);
+        }else if(tempknot.rightchild != null){
+            output.writeBit(0);
+            writeTraverse(tempknot.rightchild, letternumber);
         }
+//        if (tempknot.key != -1) {
+//            code[tempknot.key] = binary;
+//        }
     }
 
-    public static void inOrderTreeWalk(Knot x) {
-        if (x != null) {
-            inOrderTreeWalk(x.leftchild);
-            if (x.key == -1) {
-                System.out.println("knots = " + x.freq);
-            } else {
-                System.out.println("branch " + x.freq);
-            }
-            inOrderTreeWalk(x.rightchild);
-        }
-    }
 }
