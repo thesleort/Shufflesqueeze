@@ -42,21 +42,49 @@ public class Encode {
         while (i < 256) {
             if (Occurances[i] != 0) {
                 System.out.println("inserting " + i + " with freq " + Occurances[i]);
+                pqHeap.insert(new Element(Occurances[i], i));
             }
-            pqHeap.insert(new Element(Occurances[i], i));
+
             i++;
         }
         Element child = pqHeap.extractMin();
+        System.out.println(child.key);
         Knot child1 = new Knot(child.key, (Integer) child.data);
+        Knot parent = null;
         while (pqHeap.getHeap().size() > 0) {
             child = pqHeap.extractMin();
             Knot child2 = new Knot(child.key, (Integer) child.data);
-            Knot parent = new Knot(child1.freq+child2.freq);
+            System.out.println(child2.freq);
+//            System.out.println(child2.key);
+            parent = new Knot(child1.freq + child2.freq);
             parent.rightchild = child1;
             child1.parent = parent;
             parent.leftchild = child2;
             child2.parent = parent;
             child1 = parent;
         }
+        System.out.println();
+        System.out.println("------------------------------------- ");
+        System.out.println();
+        inordertreewalk(parent);
+
+
     }
+
+
+    public static int[] inordertreewalk(Knot x) {
+        if (x != null) {
+            inordertreewalk(x.leftchild);
+            if (x.key == -1) {
+                System.out.println("knots = " + x.freq);
+            } else {
+                System.out.println("branch " + x.freq);
+            }
+                inordertreewalk(x.rightchild);
+
+            }
+
+            return new int[0];
+        }
+
 }
