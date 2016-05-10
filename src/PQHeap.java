@@ -62,7 +62,7 @@ public class PQHeap implements EQ {
      * @param i   Where to insert the new element.
      * @param key The element to be inserted.
      */
-    public void HeapIncreaseKey(ArrayList<Element> A, int i, Element key) {
+    private void HeapIncreaseKey(ArrayList<Element> A, int i, Element key) {
         if (key.key >= A.get(i).key) {
             A.set(i,new Element(key.key, A.get(i).data));
             while (i > 0 && A.get(i / 2).key > A.get(i).key) {

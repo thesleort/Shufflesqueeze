@@ -12,15 +12,23 @@
  */
 public class Knot {
     public int key;
+    public int freq;
     public Knot leftchild;
     public Knot rightchild;
     public Knot parent;
 
-    public Knot(int i) {
+    public Knot(int i, int j) {
         this.key = i;
+        this.freq = j;
         this.leftchild = null;
         this.rightchild = null;
         this.parent =null;
     }
-
+    public Knot(int j) {
+        this.key = -1;
+        this.freq = j;
+        this.leftchild = null;
+        this.rightchild = null;
+        this.parent =null;
+    }
 }
