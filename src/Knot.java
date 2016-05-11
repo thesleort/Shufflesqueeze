@@ -17,7 +17,7 @@ public class Knot {
     public Knot rightchild;
     public Knot parent;
 
-    public Knot(int i, int j) {
+    public Knot(int j, int i) {
         this.key = i;
         this.freq = j;
         this.leftchild = null;
