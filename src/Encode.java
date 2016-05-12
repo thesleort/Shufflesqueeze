@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class Encode {
 
     private static int length = 256;
-    private static String[] code = new String[length];
     static BitOutputStream output;
 
     /**
@@ -66,7 +65,6 @@ public class Encode {
         }
     }
 
-
     /**
      * genHuffTree generates a Huffman-tree based on the
      * occurrence of each letter.
@@ -85,13 +83,13 @@ public class Encode {
      *                    the array - no search is needed.
      * @return The root node of the Huffman-tree.
      */
-    private static Knot genHuffTree(int[] occurances) {
+    private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
         int i = 0;
         while (i < 256) {
-            if (occurances[i] > 0) {
-                System.out.println("inserting " + i + " with freq " + occurances[i]);
-                treeParts.add(new Element(occurances[i], new Knot(occurances[i],i)));
+            if (occurrences[i] > 0) {
+                System.out.println("inserting " + i + " with freq " + occurrences[i]);
+                treeParts.add(new Element(occurrences[i], new Knot(occurrences[i],i)));
             }
             i++;
         }
