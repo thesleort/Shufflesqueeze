@@ -85,8 +85,8 @@ public class Encode {
 
     /**
      * Traverses down through the Huffman-tree and adds a 0
-     * or a 1 to a string that is then added to a leaf-knot
-     * in the end.
+     * or a 1 to a string that is then added to a translations-
+     * list in the end.
      * @param currentKnot The knot it currently points to
      * @param binary A string that holds the binary string
      *               representation of the leaf-knot. It is
