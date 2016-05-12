@@ -51,15 +51,9 @@ public class Decode {
             output.close();
             input.close();
             inFile.close();
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     /**
@@ -104,7 +98,7 @@ public class Decode {
 
     /**
      * Traverse is very similar to the
-     * method writeTraverse in the Encode
+     * method Traverse in the Encode
      * class. The difference here is that
      * it doesn't write anything. It only
      * traverses down through the Huffman-
