@@ -41,29 +41,14 @@ public class Encode {
                 if (tempNumber < 0) {
                     break;
                 }
-                System.out.print(tempNumber + " ");
                 Occurrences[tempNumber] += 1;
             }
-            System.out.println();
-            for (int i : Occurrences) System.out.print(i + " ");
-            System.out.println();
-            System.out.println(Occurrences[32]);
-
             inputFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         Knot parent = genHuffTree(Occurrences);
         makeTranslations(parent);
-
-
-
-        System.out.println();
-        System.out.println("------------------------------------- ");
-        System.out.println();
-//        for(String s: code) System.out.print(" "+s+" - ");
-
         try {
             inputFile = new FileInputStream(args[0]);
             FileOutputStream outstream = new FileOutputStream( new File(args[1]));
@@ -77,7 +62,6 @@ public class Encode {
                 if (letterNumber < 0) {
                     break;
                 }
-//                System.out.println(letterNumber);
                 bitsToWrite = code[letterNumber];
                 for (int i = 0; i < bitsToWrite.length(); i++) {
                     output.writeBit(Character.getNumericValue(bitsToWrite.charAt(i)));
@@ -140,21 +124,16 @@ public class Encode {
      */
     private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
+        PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
             if (occurrences[i] > 0) {
-                System.out.println("inserting " + i + " with freq " + occurrences[i]);
-                treeParts.add(new Element(occurrences[i], new Knot(occurrences[i],i)));
+                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
+                treeParts.add(e);
+                pqHeap.insert(e);
             }
             i++;
         }
-
-        PQHeap pqHeap = new PQHeap();
-
-        for(Element e : treeParts){
-            pqHeap.insert(e);
-        }
-        System.out.println("test print"+treeParts.size());
         for (int j = 0; j < treeParts.size() - 1; j++) {
             Element parent = new Element(0, new Knot(0));
             Knot child1 = pqHeap.extractMin().data;
@@ -165,12 +144,10 @@ public class Encode {
             child1.parent = parent.data;
             parent.data.leftchild = child2;
             child2.parent = parent.data;
-            System.out.println("inserting parent with key to list "+parent.key);
             pqHeap.insert(parent);
         }
-        Knot hufftree = pqHeap.extractMin().data;
-        System.out.println(hufftree.freq);
-        return hufftree;
+        Knot huffTree = pqHeap.extractMin().data;
+        return huffTree;
     }
 
     /**
