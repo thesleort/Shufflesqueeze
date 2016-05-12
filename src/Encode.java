@@ -53,14 +53,17 @@ public class Encode {
             for (int i : Occurances) output.writeInt(i);
 
 
-
+            String tobewritted;
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
 //                System.out.println(tempNumber);
-                writeTraverse(parent,tempNumber);
+                tobewritted = code[tempNumber];
+                for (int i = 0; i < tobewritted.length(); i++) {
+                    output.writeBit(Character.getNumericValue(tobewritted.charAt(i)));
+                }
             }
 //            So the program writes remaining bits.
             output.close();
@@ -85,6 +88,7 @@ public class Encode {
         }
         if (tempknot.key != -1) {
             code[tempknot.key] = binary;
+            System.out.println("setting bin for key "+tempknot.key+" to " + binary);
         }
     }
 
@@ -111,6 +115,7 @@ public class Encode {
             Knot child1 = pqHeap.extractMin().data;
             Knot child2 = pqHeap.extractMin().data;
             parent.key = (child1.freq + child2.freq);
+            parent.data.freq = (child1.freq + child2.freq);
             parent.data.rightchild = child1;
             child1.parent = parent.data;
             parent.data.leftchild = child2;
