@@ -1,7 +1,8 @@
 import java.io.*;
 
 /**
- * Created by Mark jervelund <Mark@jervelund.com> on 10-May-16.
+ * Created by Mark jervelund            <Mark@jervelund.com> &
+ *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
  */
 public class Encode {
 
@@ -9,55 +10,55 @@ public class Encode {
     private static String[] code = new String[length];
     static BitOutputStream output;
 
+    /**
+     * This is the encode class. This class encodes
+     * and compresses a file using Huffman-trees.
+     * It starts off by reading the input-file (1st
+     * argument). All the letters of the file are read
+     * and represented as integers in an array. The
+     * integer representation of the letter is also
+     * used as the location in the array of integers.
+     * The algorithm therefore doesn't need to search
+     * for the letters in the array. Number of times a
+     * letter is found in the file, is therefore the
+     * written in the array.
+     * It then generates a Huffman using a priority-
+     * queue heap.
+     * @param args Input is first argument and output
+     *             is the second argument.
+     */
     public static void main(String[] args) {
-
         int[] Occurances = new int[length];
         FileInputStream inFile;
         try {
             inFile = new FileInputStream(args[0]);
-
             for (int i : Occurances) Occurances[i] = 0;
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
-                System.out.print(tempNumber + " ");
                 Occurances[tempNumber] += 1;
             }
-            System.out.println();
-            for (int i : Occurances) System.out.print(i + " ");
-            System.out.println();
-            System.out.println(Occurances[32]);
-
             inFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         Knot parent = genHuffTree(Occurances);
-        maketranslations(parent);
-
-
-
-        System.out.println();
-        System.out.println("------------------------------------- ");
-        System.out.println();
-//        for(String s: code) System.out.print(" "+s+" - ");
+        makeTranslations(parent);
 
         try {
             inFile = new FileInputStream(args[0]);
-            FileOutputStream outstream = new FileOutputStream( new File(args[1]));
-            for (int i : Occurances) outstream.write(i);
+            FileOutputStream outputStream = new FileOutputStream( new File(args[1]));
+            for (int i : Occurances) outputStream.write(i);
 
-
-            output = new BitOutputStream(outstream);
+            output = new BitOutputStream(outputStream);
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
-//                System.out.println(tempNumber);
                 writeTraverse(parent,tempNumber);
             }
         } catch (IOException e) {
@@ -65,44 +66,66 @@ public class Encode {
         }
     }
 
-    private static void maketranslations(Knot parent) {
-
+    /**
+     * Starts the traversal through the Huffman-tree.
+     * @param parent The root knot.
+     */
+    private static void makeTranslations(Knot parent) {
         Traverse(parent, "");
-
     }
 
-    private static void Traverse(Knot tempknot, String binary) {
-        if (tempknot.leftchild != null) {
-            Traverse(tempknot.leftchild, (binary + "0"));
+    /**
+     * Traverses down through the Huffman-tree and adds a 0
+     * or a 1 to a string that is then added to a leaf-knot
+     * in the end.
+     * @param currentKnot The knot it currently points to
+     * @param binary A string that holds the binary string
+     *               representation of the leaf-knot. It is
+     *               continuously made one bit larger for
+     *               every knot it traverses through.
+     */
+    private static void Traverse(Knot currentKnot, String binary) {
+        if (currentKnot.leftchild != null) {
+            Traverse(currentKnot.leftchild, (binary + "0"));
         }
-        if (tempknot.rightchild != null) {
-            Traverse(tempknot.rightchild, (binary + "1"));
+        if (currentKnot.rightchild != null) {
+            Traverse(currentKnot.rightchild, (binary + "1"));
         }
-        if (tempknot.key != -1) {
-            code[tempknot.key] = binary;
+        if (currentKnot.key != -1) {
+            code[currentKnot.key] = binary;
         }
     }
 
-
-    private static Knot genHuffTree(int[] occurances) {
+    /**
+     * genHuffTree generates a Huffman-tree based on the
+     * occurrence of each letter.
+     * First it inserts the occurrences in a priority-queue
+     * heap (pqHeap) which sorts the letters by occurrence.
+     * Afterwards it extracts the letter with the least
+     * occurrence and inserts it as the deepest node of the
+     * Huffman-tree. It keeps on doing this until it reaches
+     * root of the huffman-tree.
+     * @param occurrences An array of integers. Since the
+     *                    letters are saved as integers, we
+     *                    know exactly where a letter is in
+     *                    the array - no search is needed.
+     * @return The root node of the Huffman-tree.
+     */
+    private static Knot genHuffTree(int[] occurrences) {
         PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
-            if (occurances[i] != 0) {
-                System.out.println("inserting " + i + " with freq " + occurances[i]);
-                pqHeap.insert(new Element(occurances[i], i));
+            if (occurrences[i] != 0) {
+                pqHeap.insert(new Element(occurrences[i], i));
             }
             i++;
         }
         Element child = pqHeap.extractMin();
-        System.out.println(child.key);
         Knot child1 = new Knot(child.key, (Integer) child.data);
         Knot parent = null;
         while (pqHeap.getHeap().size() > 0) {
             child = pqHeap.extractMin();
             Knot child2 = new Knot(child.key, (Integer) child.data);
-            System.out.println(child2.freq);
-//            System.out.println(child2.key);
             parent = new Knot(child1.freq + child2.freq);
             parent.rightchild = child1;
             child1.parent = parent;
@@ -112,17 +135,28 @@ public class Encode {
         }
         return parent;
     }
-    private static void writeTraverse(Knot tempknot, int letternumber) throws IOException {
-        if (tempknot.leftchild != null && tempknot.leftchild.key == letternumber) {
-            output.writeBit(1);
-            writeTraverse(tempknot.leftchild, letternumber);
-        }else if(tempknot.rightchild != null){
-            output.writeBit(0);
-            writeTraverse(tempknot.rightchild, letternumber);
-        }
-//        if (tempknot.key != -1) {
-//            code[tempknot.key] = binary;
-//        }
-    }
 
+    /**
+     * writeTraverse checks if the letter is in the right or
+     * the left child.
+     * It checks if it is either, it writes a 1 or a 0 and
+     * keeps traversing down through that child.
+     * It doesn't return anything and therefore terminates
+     * when a knot doesn't have any children.
+     * @param currentKnot The knot from where it is checking
+     *                    its children.
+     * @param letternumber The number to write the bytes for.
+     *                     It writes one bit for every knot
+     *                     it matches.
+     * @throws IOException If something happens to the file.
+     */
+    private static void writeTraverse(Knot currentKnot, int letternumber) throws IOException {
+        if (currentKnot.leftchild != null && currentKnot.leftchild.key == letternumber) {
+            output.writeBit(1);
+            writeTraverse(currentKnot.leftchild, letternumber);
+        }else if(currentKnot.rightchild != null){
+            output.writeBit(0);
+            writeTraverse(currentKnot.rightchild, letternumber);
+        }
+    }
 }
