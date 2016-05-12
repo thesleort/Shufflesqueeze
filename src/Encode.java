@@ -48,10 +48,11 @@ public class Encode {
         try {
             inFile = new FileInputStream(args[0]);
             FileOutputStream outstream = new FileOutputStream( new File(args[1]));
-            for (int i : Occurances) outstream.write(i);
-
-
             output = new BitOutputStream(outstream);
+            for (int i : Occurances) output.writeInt(i);
+
+
+
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
