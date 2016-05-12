@@ -1,7 +1,8 @@
 import java.io.*;
+import java.util.ArrayList;
 
 /**
- * Created by Mark jervelund            <Mark@jervelund.com> &
+ * Created by Mark Jervelund            <Mark@jervelund.com> &
  *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
  */
 public class Decode {
@@ -51,8 +52,6 @@ public class Decode {
             output.close();
             input.close();
             inFile.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,29 +63,24 @@ public class Decode {
      * Encode class. It is here so that the
      * Decode class works independently
      * without the need of the Encode class.
-     * @param occurances An array of integers. Since the
+     * @param occurrences An array of integers. Since the
      *                   letters are saved as integers, we
      *                   know exactly where a letter is in
      *                   the array - no search is needed.
      * @return The root node of the Huffman-tree.
      */
-    private static Knot genHuffTree(int[] occurances) {
+    private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
+        PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
-            if (occurances[i] > 0) {
-                System.out.println("inserting " + i + " with freq " + occurances[i]);
-                treeParts.add(new Element(occurances[i], new Knot(occurances[i],i)));
+            if (occurrences[i] > 0) {
+                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
+                treeParts.add(e);
+                pqHeap.insert(e);
             }
             i++;
         }
-
-        PQHeap pqHeap = new PQHeap();
-
-        for(Element e : treeParts){
-            pqHeap.insert(e);
-        }
-        System.out.println("test print"+treeParts.size());
         for (int j = 0; j < treeParts.size() - 1; j++) {
             Element parent = new Element(0, new Knot(0));
             Knot child1 = pqHeap.extractMin().data;
@@ -97,13 +91,10 @@ public class Decode {
             child1.parent = parent.data;
             parent.data.leftchild = child2;
             child2.parent = parent.data;
-            System.out.println("inserting parent with key to list "+parent.key);
-            System.out.println("parent has feq "+parent.data.freq);
             pqHeap.insert(parent);
         }
-        Knot hufftree = pqHeap.extractMin().data;
-        System.out.println(hufftree.freq);
-        return hufftree;
+        Knot huffTree = pqHeap.extractMin().data;
+        return huffTree;
     }
 
     /**
@@ -129,5 +120,4 @@ public class Decode {
         }
         return currentKnot;
     }
-
 }
