@@ -85,19 +85,16 @@ public class Encode {
      */
     private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
+        PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
             if (occurrences[i] > 0) {
                 System.out.println("inserting " + i + " with freq " + occurrences[i]);
-                treeParts.add(new Element(occurrences[i], new Knot(occurrences[i],i)));
+                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
+                treeParts.add(e);
+                pqHeap.insert(e);
             }
             i++;
-        }
-
-        PQHeap pqHeap = new PQHeap();
-
-        for(Element e : treeParts){
-            pqHeap.insert(e);
         }
         System.out.println("test print"+treeParts.size());
         for (int j = 0; j < treeParts.size() - 1; j++) {
