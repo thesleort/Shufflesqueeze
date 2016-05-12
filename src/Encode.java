@@ -153,30 +153,4 @@ public class Encode {
         return huffTree;
     }
 
-    /**
-     * writeTraverse checks if the letter is in the right or
-     * the left child.
-     * It checks if it is either, it writes a 1 or a 0 and
-     * keeps traversing down through that child.
-     * It doesn't return anything and therefore terminates
-     * when a knot doesn't have any children.
-     * @param currentKnot The knot from where it is checking
-     *                    its children.
-     * @param letterNumber The number to write the bytes for.
-     *                     It writes one bit for every knot
-     *                     it matches.
-     * @throws IOException If something happens to the file.
-     */
-        private static void writeTraverse(Knot currentKnot, int letterNumber) throws IOException {
-        if (currentKnot.leftchild != null && currentKnot.leftchild.key == letterNumber) {
-            output.writeBit(1);
-            writeTraverse(currentKnot.leftchild, letterNumber);
-        }else if(currentKnot.rightchild != null){
-            output.writeBit(0);
-            writeTraverse(currentKnot.rightchild, letterNumber);
-        }
-//        if (tempknot.key != -1) {
-//            code[tempknot.key] = binary;
-//        }
-    }
 }
