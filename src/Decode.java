@@ -5,43 +5,35 @@ import java.io.*;
  */
 public class Decode {
     public static void main(String[] args) {
-        Encode encode = new Encode();
         int[] Occurances = new int[256];
-
         try {
             FileInputStream inFile = new FileInputStream(args[0]);
             BitInputStream input = new BitInputStream(inFile);
             FileOutputStream output = new FileOutputStream(new File(args[1]));
             for (int i = 0; i < Occurances.length; i++) {
                 Occurances[i] = input.readInt();
-                System.out.println(Occurances[i]);
             }
-            Knot hufftree = genHuffTree(Occurances);
-
-            int letternumber;
-            int lettersleft = hufftree.freq;
+            Knot huffManTree = genHuffTree(Occurances);
+            int Letternumer;
+            int lettersleft = huffManTree.freq;
             while (true) {
-                letternumber = input.readBit();
-                Knot tempknot = hufftree;
+                Letternumer = input.readBit();
+                Knot tempknot = huffManTree;
 
-                tempknot = Traverse(tempknot,letternumber );
+                tempknot = Traverse(tempknot,Letternumer );
                 while (tempknot.key < 0) {
-                    letternumber = input.readBit();
-                    tempknot = Traverse(tempknot,letternumber );
-
+                    Letternumer = input.readBit();
+                    tempknot = Traverse(tempknot,Letternumer );
                 }
-//                System.out.println("Writing "+tempknot.key+" To output");
                 output.write(tempknot.key);
-                lettersleft--;System.out.println(lettersleft);
+                lettersleft--;
                 if (lettersleft < 1){
                     break;
                 }
-                System.out.println("printing something");
-            }
-            System.out.println("closing output streams.     ");
+}
             output.close();
-//            input.close();
-//            inFile.close();
+            input.close();
+            inFile.close();
 
 
         } catch (FileNotFoundException e) {
@@ -57,20 +49,16 @@ public class Decode {
         int i = 0;
         while (i < 256) {
             if (occurances[i] != 0) {
-                System.out.println("inserting " + i + " with freq " + occurances[i]);
                 pqHeap.insert(new Element(occurances[i], i));
             }
             i++;
         }
         Element child = pqHeap.extractMin();
-        System.out.println(child.key);
         Knot child1 = new Knot(child.key, (Integer) child.data);
         Knot parent = null;
         while (pqHeap.getHeap().size() > 0) {
             child = pqHeap.extractMin();
             Knot child2 = new Knot(child.key, (Integer) child.data);
-            System.out.println(child2.freq);
-//            System.out.println(child2.key);
             parent = new Knot(child1.freq + child2.freq);
             parent.rightchild = child1;
             child1.parent = parent;
