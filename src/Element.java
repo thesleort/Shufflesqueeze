@@ -9,9 +9,9 @@
  */
 public class Element {
     public int key;
-    public Object data;
+    public Knot data;
 
-    public Element(int i, Object o) {
+    public Element(int i, Knot o) {
         this.key = i;
         this.data = o;
     }
