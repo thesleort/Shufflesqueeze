@@ -45,6 +45,7 @@ public class Decode {
                 }
                 output.write(currentKnot.key);
                 lettersLeft--;
+                System.out.println(lettersLeft);
                 if (lettersLeft < 1) {
                     break;
                 }
@@ -114,9 +115,9 @@ public class Decode {
      */
     private static Knot Traverse(Knot currentKnot, int letterNumber) {
         if (letterNumber == 0) {
-            currentKnot = currentKnot.rightchild;
-        } else if (letterNumber == 1) {
             currentKnot = currentKnot.leftchild;
+        } else if (letterNumber == 1) {
+            currentKnot = currentKnot.rightchild;
         }
         return currentKnot;
     }

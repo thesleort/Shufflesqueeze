@@ -62,7 +62,7 @@ public class Encode {
                 if (tempNumber < 0) {
                     break;
                 }
-                writeTraverse(parent,tempNumber);
+//                writeTraverse(parent,tempNumber);
                 bitsToWrite = code[tempNumber];
                 for (int i = 0; i < bitsToWrite.length(); i++) {
                     output.writeBit(Character.getNumericValue(bitsToWrite.charAt(i)));
