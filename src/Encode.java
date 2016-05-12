@@ -85,8 +85,8 @@ public class Encode {
 
     /**
      * Traverses down through the Huffman-tree and adds a 0
-     * or a 1 to a string that is then added to a leaf-knot
-     * in the end.
+     * or a 1 to a string that is then added to a translations-
+     * list in the end.
      * @param currentKnot The knot it currently points to
      * @param binary A string that holds the binary string
      *               representation of the leaf-knot. It is
@@ -113,8 +113,11 @@ public class Encode {
      * The insertion is an Element, where first parameter is
      * how many times the letter occurs and the second
      * parameter is the letter represented as an integer.
-     * Afterwards it extracts the letter with the least
-     * occurrence and inserts it as the deepest node of the
+     * Afterwards it extracts the two smallest nodes,
+     * merges them and inserts them back into the queue.
+     * this is done n times, where is the number of elements
+     * in occurrences
+     *
      * Huffman-tree.
      * @param occurrences An array of integers. Since the
      *                    letters are saved as integers, we
@@ -164,7 +167,7 @@ public class Encode {
      *                     it matches.
      * @throws IOException If something happens to the file.
      */
-    private static void writeTraverse(Knot currentKnot, int letterNumber) throws IOException {
+        private static void writeTraverse(Knot currentKnot, int letterNumber) throws IOException {
         if (currentKnot.leftchild != null && currentKnot.leftchild.key == letterNumber) {
             output.writeBit(1);
             writeTraverse(currentKnot.leftchild, letterNumber);
