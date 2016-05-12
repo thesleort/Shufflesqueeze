@@ -60,6 +60,9 @@ public class Encode {
 //                System.out.println(tempNumber);
                 writeTraverse(parent,tempNumber);
             }
+//            So the program writes remaining bits.
+            output.close();
+            outstream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
