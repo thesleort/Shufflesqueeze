@@ -23,38 +23,48 @@ public class Decode {
      *             uncompressed output-file.
      */
     public static void main(String[] args) {
-        int[] Occurances = new int[256];
+        int[] Occurrences = new int[256];
         try {
             FileInputStream inFile = new FileInputStream(args[0]);
             BitInputStream input = new BitInputStream(inFile);
             FileOutputStream output = new FileOutputStream(new File(args[1]));
-            for (int i = 0; i < Occurances.length; i++) {
-                Occurances[i] = input.readInt();
+            for (int i = 0; i < Occurrences.length; i++) {
+                Occurrences[i] = input.readInt();
             }
-            Knot huffManTree = genHuffTree(Occurances);
+            Knot huffmanTree = genHuffTree(Occurrences);
             int letterNumber;
-            int lettersLeft = huffManTree.freq;
+            int lettersLeft = huffmanTree.freq;
+            System.out.println(lettersLeft);
             while (true) {
                 letterNumber = input.readBit();
-                Knot currentKnot = huffManTree;
+                Knot currentKnot = huffmanTree;
 
-                currentKnot = Traverse(currentKnot, letterNumber);
+                currentKnot = Traverse(currentKnot,letterNumber );
                 while (currentKnot.key < 0) {
                     letterNumber = input.readBit();
-                    currentKnot = Traverse(currentKnot, letterNumber);
+                    currentKnot = Traverse(currentKnot,letterNumber );
                 }
                 output.write(currentKnot.key);
+
+                System.out.println("letters left "+lettersLeft);
                 lettersLeft--;
-                if (lettersLeft < 1) {
+                if (lettersLeft < 1){
                     break;
                 }
             }
+            System.out.println("closing stuff");
             output.close();
             input.close();
             inFile.close();
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
     /**
@@ -71,16 +81,21 @@ public class Decode {
      */
     private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
-        PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
             if (occurrences[i] > 0) {
-                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
-                treeParts.add(e);
-                pqHeap.insert(e);
+                System.out.println("inserting " + i + " with freq " + occurrences[i]);
+                treeParts.add(new Element(occurrences[i], new Knot(occurrences[i],i)));
             }
             i++;
         }
+
+        PQHeap pqHeap = new PQHeap();
+
+        for(Element e : treeParts){
+            pqHeap.insert(e);
+        }
+        System.out.println("test print"+treeParts.size());
         for (int j = 0; j < treeParts.size() - 1; j++) {
             Element parent = new Element(0, new Knot(0));
             Knot child1 = pqHeap.extractMin().data;
@@ -91,10 +106,12 @@ public class Decode {
             child1.parent = parent.data;
             parent.data.leftchild = child2;
             child2.parent = parent.data;
+            System.out.println("inserting parent with key to list "+parent.key);
             pqHeap.insert(parent);
         }
-        Knot huffTree = pqHeap.extractMin().data;
-        return huffTree;
+        Knot hufftree = pqHeap.extractMin().data;
+        System.out.println(hufftree.freq);
+        return hufftree;
     }
 
     /**
@@ -112,11 +129,11 @@ public class Decode {
      *                     it matches.
      * @return the current knot to tell what letter to write.
      */
-    private static Knot Traverse(Knot currentKnot, int letterNumber) {
-        if (letterNumber == 0) {
-            currentKnot = currentKnot.rightchild;
-        } else if (letterNumber == 1) {
+    private static Knot Traverse(Knot currentKnot, int letterNumber){
+        if (letterNumber == 0){
             currentKnot = currentKnot.leftchild;
+        }else if(letterNumber == 1){
+            currentKnot = currentKnot.rightchild;
         }
         return currentKnot;
     }

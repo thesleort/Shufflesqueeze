@@ -29,19 +29,27 @@ public class Encode {
      *             is the second argument.
      */
     public static void main(String[] args) {
+
         int[] Occurrences = new int[length];
-        FileInputStream inFile;
+        FileInputStream inputFile;
         try {
-            inFile = new FileInputStream(args[0]);
+            inputFile = new FileInputStream(args[0]);
+
             for (int i : Occurrences) Occurrences[i] = 0;
             while (true) {
-                int tempNumber = inFile.read();
+                int tempNumber = inputFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
+                System.out.print(tempNumber + " ");
                 Occurrences[tempNumber] += 1;
             }
-            inFile.close();
+            System.out.println();
+            for (int i : Occurrences) System.out.print(i + " ");
+            System.out.println();
+            System.out.println(Occurrences[32]);
+
+            inputFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,25 +57,35 @@ public class Encode {
         Knot parent = genHuffTree(Occurrences);
         makeTranslations(parent);
 
+
+
+        System.out.println();
+        System.out.println("------------------------------------- ");
+        System.out.println();
+//        for(String s: code) System.out.print(" "+s+" - ");
+
         try {
-            inFile = new FileInputStream(args[0]);
-            FileOutputStream outputStream = new FileOutputStream( new File(args[1]));
-            output = new BitOutputStream(outputStream);
+            inputFile = new FileInputStream(args[0]);
+            FileOutputStream outstream = new FileOutputStream( new File(args[1]));
+            output = new BitOutputStream(outstream);
             for (int i : Occurrences) output.writeInt(i);
 
 
             String bitsToWrite;
             while (true) {
-                int tempNumber = inFile.read();
-                if (tempNumber < 0) {
+                int letterNumber = inputFile.read();
+                if (letterNumber < 0) {
                     break;
                 }
-                writeTraverse(parent,tempNumber);
-                bitsToWrite = code[tempNumber];
+//                System.out.println(letterNumber);
+                bitsToWrite = code[letterNumber];
                 for (int i = 0; i < bitsToWrite.length(); i++) {
                     output.writeBit(Character.getNumericValue(bitsToWrite.charAt(i)));
                 }
             }
+//            So the program writes remaining bits.
+            output.close();
+            outstream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -122,16 +140,21 @@ public class Encode {
      */
     private static Knot genHuffTree(int[] occurrences) {
         ArrayList<Element> treeParts = new ArrayList<>();
-        PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
             if (occurrences[i] > 0) {
-                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
-                treeParts.add(e);
-                pqHeap.insert(e);
+                System.out.println("inserting " + i + " with freq " + occurrences[i]);
+                treeParts.add(new Element(occurrences[i], new Knot(occurrences[i],i)));
             }
             i++;
         }
+
+        PQHeap pqHeap = new PQHeap();
+
+        for(Element e : treeParts){
+            pqHeap.insert(e);
+        }
+        System.out.println("test print"+treeParts.size());
         for (int j = 0; j < treeParts.size() - 1; j++) {
             Element parent = new Element(0, new Knot(0));
             Knot child1 = pqHeap.extractMin().data;
@@ -142,10 +165,12 @@ public class Encode {
             child1.parent = parent.data;
             parent.data.leftchild = child2;
             child2.parent = parent.data;
+            System.out.println("inserting parent with key to list "+parent.key);
             pqHeap.insert(parent);
         }
-        Knot huffTree = pqHeap.extractMin().data;
-        return huffTree;
+        Knot hufftree = pqHeap.extractMin().data;
+        System.out.println(hufftree.freq);
+        return hufftree;
     }
 
     /**
@@ -170,5 +195,8 @@ public class Encode {
             output.writeBit(0);
             writeTraverse(currentKnot.rightchild, letterNumber);
         }
+//        if (tempknot.key != -1) {
+//            code[tempknot.key] = binary;
+//        }
     }
 }
