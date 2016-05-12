@@ -1,8 +1,7 @@
 import java.io.*;
-import java.util.ArrayList;
 
 /**
- * Created by Mark Jervelund            <Mark@jervelund.com> &
+ * Created by Mark jervelund            <Mark@jervelund.com> &
  *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
  */
 public class Decode {
@@ -52,6 +51,8 @@ public class Decode {
             output.close();
             input.close();
             inFile.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,38 +64,35 @@ public class Decode {
      * Encode class. It is here so that the
      * Decode class works independently
      * without the need of the Encode class.
-     * @param occurrences An array of integers. Since the
+     * @param occurances An array of integers. Since the
      *                   letters are saved as integers, we
      *                   know exactly where a letter is in
      *                   the array - no search is needed.
      * @return The root node of the Huffman-tree.
      */
-    private static Knot genHuffTree(int[] occurrences) {
-        ArrayList<Element> treeParts = new ArrayList<>();
+    private static Knot genHuffTree(int[] occurances) {
         PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
-            if (occurrences[i] > 0) {
-                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
-                treeParts.add(e);
-                pqHeap.insert(e);
+            if (occurances[i] != 0) {
+                pqHeap.insert(new Element(occurances[i], i));
             }
             i++;
         }
-        for (int j = 0; j < treeParts.size() - 1; j++) {
-            Element parent = new Element(0, new Knot(0));
-            Knot child1 = pqHeap.extractMin().data;
-            Knot child2 = pqHeap.extractMin().data;
-            parent.key = (child1.freq + child2.freq);
-            parent.data.freq = (child1.freq + child2.freq);
-            parent.data.rightchild = child1;
-            child1.parent = parent.data;
-            parent.data.leftchild = child2;
-            child2.parent = parent.data;
-            pqHeap.insert(parent);
+        Element child = pqHeap.extractMin();
+        Knot child1 = new Knot(child.key, (Integer) child.data);
+        Knot parent = null;
+        while (pqHeap.getHeap().size() > 0) {
+            child = pqHeap.extractMin();
+            Knot child2 = new Knot(child.key, (Integer) child.data);
+            parent = new Knot(child1.freq + child2.freq);
+            parent.rightchild = child1;
+            child1.parent = parent;
+            parent.leftchild = child2;
+            child2.parent = parent;
+            child1 = parent;
         }
-        Knot huffTree = pqHeap.extractMin().data;
-        return huffTree;
+        return parent;
     }
 
     /**
@@ -120,4 +118,5 @@ public class Decode {
         }
         return currentKnot;
     }
+
 }

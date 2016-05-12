@@ -1,15 +1,14 @@
 import java.io.*;
-import java.util.ArrayList;
 
 /**
- * Created by Mark Jervelund            <Mark@jervelund.com> &
+ * Created by Mark jervelund            <Mark@jervelund.com> &
  *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
  */
 public class Encode {
 
     private static int length = 256;
-    private static BitOutputStream output;
     private static String[] code = new String[length];
+    static BitOutputStream output;
 
     /**
      * This is the encode class. This class encodes
@@ -29,79 +28,43 @@ public class Encode {
      *             is the second argument.
      */
     public static void main(String[] args) {
-        int[] Occurrences = new int[length];
+        int[] Occurances = new int[length];
         FileInputStream inFile;
         try {
             inFile = new FileInputStream(args[0]);
-            for (int i : Occurrences) Occurrences[i] = 0;
+            for (int i : Occurances) Occurances[i] = 0;
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
-                Occurrences[tempNumber] += 1;
+                Occurances[tempNumber] += 1;
             }
             inFile.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Knot parent = genHuffTree(Occurrences);
-        makeTranslations(parent);
+        Knot parent = genHuffTree(Occurances);
 
         try {
             inFile = new FileInputStream(args[0]);
             FileOutputStream outputStream = new FileOutputStream( new File(args[1]));
+            for (int i : Occurances) outputStream.write(i);
+
             output = new BitOutputStream(outputStream);
-            for (int i : Occurrences) output.writeInt(i);
-
-
-            String bitsToWrite;
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
                 writeTraverse(parent,tempNumber);
-                bitsToWrite = code[tempNumber];
-                for (int i = 0; i < bitsToWrite.length(); i++) {
-                    output.writeBit(Character.getNumericValue(bitsToWrite.charAt(i)));
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Starts the traversal through the Huffman-tree.
-     * @param parent The root knot.
-     */
-    private static void makeTranslations(Knot parent) {
-        Traverse(parent, "");
-    }
-
-    /**
-     * Traverses down through the Huffman-tree and adds a 0
-     * or a 1 to a string that is then added to a leaf-knot
-     * in the end.
-     * @param currentKnot The knot it currently points to
-     * @param binary A string that holds the binary string
-     *               representation of the leaf-knot. It is
-     *               continuously made one bit larger for
-     *               every knot it traverses through.
-     */
-    private static void Traverse(Knot currentKnot, String binary) {
-        if (currentKnot.leftchild != null) {
-            Traverse(currentKnot.leftchild, (binary + "0"));
-        }
-        if (currentKnot.rightchild != null) {
-            Traverse(currentKnot.rightchild, (binary + "1"));
-        }
-        if (currentKnot.key != -1) {
-            code[currentKnot.key] = binary;
-        }
-    }
 
     /**
      * genHuffTree generates a Huffman-tree based on the
@@ -113,7 +76,8 @@ public class Encode {
      * parameter is the letter represented as an integer.
      * Afterwards it extracts the letter with the least
      * occurrence and inserts it as the deepest node of the
-     * Huffman-tree.
+     * Huffman-tree. It keeps on doing this until it reaches
+     * root of the huffman-tree.
      * @param occurrences An array of integers. Since the
      *                    letters are saved as integers, we
      *                    know exactly where a letter is in
@@ -121,31 +85,28 @@ public class Encode {
      * @return The root node of the Huffman-tree.
      */
     private static Knot genHuffTree(int[] occurrences) {
-        ArrayList<Element> treeParts = new ArrayList<>();
         PQHeap pqHeap = new PQHeap();
         int i = 0;
         while (i < 256) {
-            if (occurrences[i] > 0) {
-                Element e = new Element(occurrences[i], new Knot(occurrences[i],i));
-                treeParts.add(e);
-                pqHeap.insert(e);
+            if (occurrences[i] != 0) {
+                pqHeap.insert(new Element(occurrences[i], i));
             }
             i++;
         }
-        for (int j = 0; j < treeParts.size() - 1; j++) {
-            Element parent = new Element(0, new Knot(0));
-            Knot child1 = pqHeap.extractMin().data;
-            Knot child2 = pqHeap.extractMin().data;
-            parent.key = (child1.freq + child2.freq);
-            parent.data.freq = (child1.freq + child2.freq);
-            parent.data.rightchild = child1;
-            child1.parent = parent.data;
-            parent.data.leftchild = child2;
-            child2.parent = parent.data;
-            pqHeap.insert(parent);
+        Element child = pqHeap.extractMin();
+        Knot child1 = new Knot(child.key, (Integer) child.data);
+        Knot parent = null;
+        while (pqHeap.getHeap().size() > 0) {
+            child = pqHeap.extractMin();
+            Knot child2 = new Knot(child.key, (Integer) child.data);
+            parent = new Knot(child1.freq + child2.freq);
+            parent.rightchild = child1;
+            child1.parent = parent;
+            parent.leftchild = child2;
+            child2.parent = parent;
+            child1 = parent;
         }
-        Knot huffTree = pqHeap.extractMin().data;
-        return huffTree;
+        return parent;
     }
 
     /**
@@ -157,18 +118,18 @@ public class Encode {
      * when a knot doesn't have any children.
      * @param currentKnot The knot from where it is checking
      *                    its children.
-     * @param letterNumber The number to write the bytes for.
+     * @param letternumber The number to write the bytes for.
      *                     It writes one bit for every knot
      *                     it matches.
      * @throws IOException If something happens to the file.
      */
-    private static void writeTraverse(Knot currentKnot, int letterNumber) throws IOException {
-        if (currentKnot.leftchild != null && currentKnot.leftchild.key == letterNumber) {
+    private static void writeTraverse(Knot currentKnot, int letternumber) throws IOException {
+        if (currentKnot.leftchild != null && currentKnot.leftchild.key == letternumber) {
             output.writeBit(1);
-            writeTraverse(currentKnot.leftchild, letterNumber);
+            writeTraverse(currentKnot.leftchild, letternumber);
         }else if(currentKnot.rightchild != null){
             output.writeBit(0);
-            writeTraverse(currentKnot.rightchild, letterNumber);
+            writeTraverse(currentKnot.rightchild, letternumber);
         }
     }
 }
