@@ -50,15 +50,22 @@ public class Encode {
         try {
             inFile = new FileInputStream(args[0]);
             FileOutputStream outputStream = new FileOutputStream( new File(args[1]));
-            for (int i : Occurances) outputStream.write(i);
-
             output = new BitOutputStream(outputStream);
+            for (int i : Occurances) output.writeInt(i);
+
+
+            String tobewritted;
             while (true) {
                 int tempNumber = inFile.read();
                 if (tempNumber < 0) {
                     break;
                 }
                 writeTraverse(parent,tempNumber);
+//                System.out.println(tempNumber);
+                tobewritted = code[tempNumber];
+                for (int i = 0; i < tobewritted.length(); i++) {
+                    output.writeBit(Character.getNumericValue(tobewritted.charAt(i)));
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,6 +109,7 @@ public class Encode {
             Knot child1 = pqHeap.extractMin().data;
             Knot child2 = pqHeap.extractMin().data;
             parent.key = (child1.freq + child2.freq);
+            parent.data.freq = (child1.freq + child2.freq);
             parent.data.rightchild = child1;
             child1.parent = parent.data;
             parent.data.leftchild = child2;
