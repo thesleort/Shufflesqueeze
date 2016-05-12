@@ -46,7 +46,6 @@ public class Encode {
         }
 
         Knot parent = genHuffTree(Occurances);
-        makeTranslations(parent);
 
         try {
             inFile = new FileInputStream(args[0]);
@@ -66,41 +65,15 @@ public class Encode {
         }
     }
 
-    /**
-     * Starts the traversal through the Huffman-tree.
-     * @param parent The root knot.
-     */
-    private static void makeTranslations(Knot parent) {
-        Traverse(parent, "");
-    }
-
-    /**
-     * Traverses down through the Huffman-tree and adds a 0
-     * or a 1 to a string that is then added to a leaf-knot
-     * in the end.
-     * @param currentKnot The knot it currently points to
-     * @param binary A string that holds the binary string
-     *               representation of the leaf-knot. It is
-     *               continuously made one bit larger for
-     *               every knot it traverses through.
-     */
-    private static void Traverse(Knot currentKnot, String binary) {
-        if (currentKnot.leftchild != null) {
-            Traverse(currentKnot.leftchild, (binary + "0"));
-        }
-        if (currentKnot.rightchild != null) {
-            Traverse(currentKnot.rightchild, (binary + "1"));
-        }
-        if (currentKnot.key != -1) {
-            code[currentKnot.key] = binary;
-        }
-    }
 
     /**
      * genHuffTree generates a Huffman-tree based on the
      * occurrence of each letter.
      * First it inserts the occurrences in a priority-queue
      * heap (pqHeap) which sorts the letters by occurrence.
+     * The insertion is an Element, where first parameter is
+     * how many times the letter occurs and the second
+     * parameter is the letter represented as an integer.
      * Afterwards it extracts the letter with the least
      * occurrence and inserts it as the deepest node of the
      * Huffman-tree. It keeps on doing this until it reaches
