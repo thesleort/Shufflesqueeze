@@ -113,9 +113,11 @@ public class Encode {
      * The insertion is an Element, where first parameter is
      * how many times the letter occurs and the second
      * parameter is the letter represented as an integer.
-     * Afterwards it extracts the letter with the least
-     * occurrence and inserts it as the deepest node of the
-     * Huffman-tree.
+     * Afterwards it extracts the two smallest nodes,
+     * merges them and inserts them back into the queue.
+     * this is done n times, where is the number of elements
+     * in occurrences.
+     *
      * @param occurrences An array of integers. Since the
      *                    letters are saved as integers, we
      *                    know exactly where a letter is in
