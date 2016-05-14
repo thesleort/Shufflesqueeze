@@ -1,3 +1,9 @@
+/**
+ * Created by troels on 14-05-16.
+ * <p/>
+ * This file belongs to the project Huffman-Tree in
+ * the package PACKAGE_NAME.
+ */
 import java.io.*;
 import java.util.ArrayList;
 
@@ -5,7 +11,7 @@ import java.util.ArrayList;
  * Created by Mark Jervelund            <Mark@jervelund.com> &
  *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
  */
-public class Encode {
+public class Encrypt {
 
     private static int length = 256;
     private static BitOutputStream output;
@@ -28,12 +34,11 @@ public class Encode {
      *
      * @param inFile
      */
-    public Encode(String[] inFile) {
+    public Encrypt(String inFile[]) {
 
         int[] Occurrences = new int[length];
         FileInputStream inputFile;
         try {
-            System.out.println(inFile.length);
             inputFile = new FileInputStream(inFile[0]);
 
             for (int i : Occurrences) Occurrences[i] = 0;
@@ -52,16 +57,22 @@ public class Encode {
         makeTranslations(parent);
         try {
             inputFile = new FileInputStream(inFile[0]);
-            FileOutputStream outstream;
+            FileOutputStream outStream;
             if (inFile.length>1) {
-                outstream = new FileOutputStream( new File(inFile[1]+".hzip"));
+                outStream = new FileOutputStream( new File(inFile[1]+".key") );
             } else {
-                outstream = new FileOutputStream( new File(inFile[0]+".hzip"));
+                outStream = new FileOutputStream( new File(inFile[0]+".key") );
             }
-            output = new BitOutputStream(outstream);
+            output = new BitOutputStream(outStream);
             for (int i : Occurrences) output.writeInt(i);
-
-
+            output.close();
+            outStream.close();
+            if (inFile.length>1) {
+                outStream = new FileOutputStream( new File(inFile[1]+".hec") );
+            } else {
+                outStream = new FileOutputStream( new File(inFile[0]+".hec") );
+            }
+            output = new BitOutputStream(outStream);
             String bitsToWrite;
             while (true) {
                 int letterNumber = inputFile.read();
@@ -75,7 +86,7 @@ public class Encode {
             }
 //            So the program writes remaining bits.
             output.close();
-            outstream.close();
+            outStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
