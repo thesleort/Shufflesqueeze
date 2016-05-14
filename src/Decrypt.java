@@ -1,49 +1,54 @@
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Mark Jervelund            <Mark@jervelund.com> &
- *            Troels Blicher Petersen   <troels@newtec.dk> on 10-May-16.
+ * Created by troels on 14-05-16.
+ * <p/>
+ * This file belongs to the project Huffman-Tree in
+ * the package PACKAGE_NAME.
  */
-public class Decode {
-    /**
-     * The Decode class is simply described
-     * the reverse action of the Encode class.
-     * It reads a compressed file and
-     * decompressed it.
-     * It does so, by reading the compression-
-     * code in the beginning of the file. From
-     * this code it generates a Huffman-tree.
-     * This Huffman-tree is then used to translate
-     * the the bits into letters again.
-     */
-    public Decode(String[] inFile) {
+public class Decrypt {
+    public Decrypt(String inFile[], String keyFile) {
         int[] Occurrences = new int[256];
         try {
-            FileInputStream inputFile = new FileInputStream(inFile[0]);
+            FileInputStream inputFile = new FileInputStream(keyFile);
             BitInputStream input = new BitInputStream(inputFile);
-            FileOutputStream output = new FileOutputStream(new File(inFile[1]));
+            FileOutputStream outStream;
+            if (inFile.length > 1) {
+                outStream = new FileOutputStream(new File(inFile[1]+".out"));
+            } else {
+                outStream = new FileOutputStream(new File(inFile[0]+".out"));
+            }
             for (int i = 0; i < Occurrences.length; i++) {
                 Occurrences[i] = input.readInt();
             }
+            inputFile.close();
+            input.close();
+            inputFile = new FileInputStream(inFile[0]);
+            input = new BitInputStream(inputFile);
             Knot huffmanTree = new HuffmanTreeGenerator().getTree(Occurrences);
+            System.out.println(Occurrences.length);
             int letterNumber;
             int lettersLeft = huffmanTree.freq;
             while (true) {
                 letterNumber = input.readBit();
                 Knot currentKnot = huffmanTree;
-                currentKnot = Traverse(currentKnot,letterNumber );
+                currentKnot = Traverse(currentKnot, letterNumber);
                 while (currentKnot.key < 0) {
                     letterNumber = input.readBit();
-                    currentKnot = Traverse(currentKnot,letterNumber );
+                    currentKnot = Traverse(currentKnot, letterNumber);
                 }
-                output.write(currentKnot.key);
+                outStream.write(currentKnot.key);
                 lettersLeft--;
-                if (lettersLeft < 1){
+                if (lettersLeft < 1) {
                     break;
                 }
             }
-            output.close();
+            System.out.println("done");
+            outStream.close();
             input.close();
             inputFile.close();
         } catch (IOException e) {
@@ -59,17 +64,18 @@ public class Decode {
      * traverses down through the Huffman-
      * tree to find the letter to translate
      * into.
-     * @param currentKnot The knot from where it is checking
-     *                    its children.
+     *
+     * @param currentKnot  The knot from where it is checking
+     *                     its children.
      * @param letterNumber The number to write the bytes for.
      *                     It writes one bit for every knot
      *                     it matches.
      * @return the current knot to tell what letter to write.
      */
-    private static Knot Traverse(Knot currentKnot, int letterNumber){
-        if (letterNumber == 0){
+    private static Knot Traverse(Knot currentKnot, int letterNumber) {
+        if (letterNumber == 0) {
             currentKnot = currentKnot.leftchild;
-        }else if(letterNumber == 1){
+        } else if (letterNumber == 1) {
             currentKnot = currentKnot.rightchild;
         }
         return currentKnot;

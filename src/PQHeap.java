@@ -17,7 +17,7 @@ public class PQHeap implements EQ {
      * Creates a heap of without any elements.
      */
     public PQHeap() {
-        A = new ArrayList<>();
+        A = new ArrayList();
     }
 
     /**
