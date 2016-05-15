@@ -1,4 +1,4 @@
-# Huffman-Tree
+# Shufflesqueeze
 This is a simple compression tool made using the Huffman Tree algorithm.
 ---
 It can be used in two ways. The first is simple file compression. Here it simply compresses the file and stores a decompression key in the same file.
