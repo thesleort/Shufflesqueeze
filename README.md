@@ -7,15 +7,15 @@ The second method saves the decompression key in a separate file. This means tha
  ---
 #How to:
 
-Simple compression:
-java -jar Huffencrypt.jar -c inputfile outputfile(optional)
-Simple decompression:
-java -jar Huffencrypt.jar -dc inputfile.hzip outputfile(optional)
+Simple compression:<br>
+Inline `java -jar Huffencrypt.jar -c inputfile outputfile(optional)`<br>
+Simple decompression:<br>
+Inline `java -jar Huffencrypt.jar -dc inputfile.hzip outputfile(optional)`<br>
 
-Encryption:
-java -jar Huffencrypt.jar -e inputfile outputfile(optional)
-Decryption:
-java -jar Huffencrypt.jar -d inputfile.hec outputfile(optional) inputfile.key
+Encryption:<br>
+Inline `java -jar Huffencrypt.jar -e inputfile outputfile(optional)`<br>
+Decryption:<br>
+Inline `java -jar Huffencrypt.jar -d inputfile.hec outputfile(optional) inputfile.key`<br>
 
 ---
 I encourage everyone to try and break the encryption, so that we can possibly improve it.
