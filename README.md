@@ -8,14 +8,14 @@ The second method saves the decompression key in a separate file. This means tha
 #How to:
 
 Simple compression:<br>
-`java -jar Huffencrypt.jar -c inputfile outputfile(optional)`<br>
+`java -jar Huffman-Tree.jar -c inputfile outputfile(optional)`<br>
 Simple decompression:<br>
-`java -jar Huffencrypt.jar -dc inputfile.hzip outputfile(optional)`<br>
+`java -jar Huffman-Tree.jar -dc inputfile.hzip outputfile(optional)`<br>
 
 Encryption:<br>
-`java -jar Huffencrypt.jar -e inputfile outputfile(optional)`<br>
+`java -jar Huffman-Tree.jar -e inputfile outputfile(optional)`<br>
 Decryption:<br>
-`java -jar Huffencrypt.jar -d inputfile.hec outputfile(optional) inputfile.key`<br>
+`java -jar Huffman-Tree.jar -d inputfile.hec outputfile(optional) inputfile.key`<br>
 
 ---
 I encourage everyone to try and break the encryption, so that we can possibly improve it.
