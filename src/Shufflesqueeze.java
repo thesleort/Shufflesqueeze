@@ -6,7 +6,7 @@ import java.util.Arrays;
  * This file belongs to the project Huffman-Tree in
  * the package PACKAGE_NAME.
  */
-public class Huffencrypt {
+public class Shufflesqueeze {
     public static void main(String[] args) {
         if (args[0].equals("-e")) {
             new Encrypt(Arrays.copyOfRange(args, 1, args.length));
