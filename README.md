@@ -18,6 +18,6 @@ Decryption:<br>
 `java -jar Shufflesqueeze.jar -d inputfile.hec outputfile(optional) inputfile.key`<br>
 
 ---
-I encourage everyone to try and break the encryption, so that we can possibly improve it.
+I encourage everyone to do whatever they want with the code. The program was a Computer Science project at University of Southern Denmark. I have since improved the functionality a little, but the core program is still the same.
  
  
